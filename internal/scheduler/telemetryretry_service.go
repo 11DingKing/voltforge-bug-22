@@ -1,6 +1,8 @@
 package scheduler
 
-import "errors"
+import (
+	"errors"
+)
 
 var ErrTelemetryRetryTransient = errors.New("telemetryretry temporarily unavailable")
 var ErrTelemetryRetryPermanent = errors.New("telemetryretry permanently rejected")
@@ -15,9 +17,9 @@ func (r *TelemetryRetryRetry) Record(err error) {
 		r.Permanent = false
 		return
 	}
-	if err.Error() == ErrTelemetryRetryTransient.Error() {
+	if errors.Is(err, ErrTelemetryRetryTransient) {
 		r.Attempts++
-	} else {
-		r.Permanent = true
+		return
 	}
+	r.Permanent = true
 }

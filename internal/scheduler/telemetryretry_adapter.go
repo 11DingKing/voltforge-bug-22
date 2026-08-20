@@ -3,7 +3,10 @@ package scheduler
 import "errors"
 
 func (r *TelemetryRetryRetry) ShouldRetry(err error) bool {
-	return err != nil && !r.Permanent && err.Error() == ErrTelemetryRetryTransient.Error()
+	if err == nil || r.Permanent {
+		return false
+	}
+	return errors.Is(err, ErrTelemetryRetryTransient)
 }
 func (r *TelemetryRetryRetry) State() string {
 	if r.Permanent {
